@@ -332,18 +332,19 @@ def about():
 
 import threading
 
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
 def send_email(name, email_address, phone_number, message):
-    send_message = f"Name: {name}\nEmail: {email_address}\nPhone: {phone_number}\nMessage: {message}"
     try:
-        print(f"Attempting to send email...")
-        with smtplib.SMTP("smtp.gmail.com", 587, timeout=30) as connection:
-            connection.starttls()
-            connection.login(user=MY_EMAIL, password=PASSWORD)
-            connection.sendmail(
-                from_addr=MY_EMAIL,
-                to_addrs=MY_EMAIL,
-                msg=f"Subject: New Contact Message\n\n{send_message}"
-            )
+        msg = Mail(
+            from_email=MY_EMAIL,
+            to_emails=MY_EMAIL,
+            subject="New Contact Message",
+            plain_text_content=f"Name: {name}\nEmail: {email_address}\nPhone: {phone_number}\nMessage: {message}"
+        )
+        sg = SendGridAPIClient(os.environ.get('SENDGRID_API_KEY'))
+        sg.send(msg)
         print("Email sent successfully!")
     except Exception as e:
         print(f"Email error: {e}")
