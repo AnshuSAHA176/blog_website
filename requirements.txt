@@ -16,3 +16,4 @@ SQLAlchemy==2.0.25
 typing_extensions==4.15.0
 Werkzeug==3.0.0
 WTForms==3.0.1
+gunicorn==21.2.0
