@@ -352,7 +352,7 @@ message: {message}
         connection.starttls()
         connection.login(user=MY_EMAIL,password=PASSWORD)
         connection.sendmail(from_addr=MY_EMAIL,to_addrs=MY_EMAIL,msg=f"subject:contact news\n\n{send_message}")
-
+        return redirect(url_for('get_all_posts'))
     return render_template("contact.html")
 
 
