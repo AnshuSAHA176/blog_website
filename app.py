@@ -332,28 +332,30 @@ def about():
 
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
+    msg_sent = False
     if request.method == "POST":
         name = request.form.get("name")
         email_address = request.form.get("email")
         phone_number = request.form.get("phone")
         message = request.form.get("message")
         
-        send_message = f"""
-name: {name}
-email: {email_address}
-phone number: {phone_number}
-message: {message}
-"""
-        with smtplib.SMTP("smtp.gmail.com", 587) as connection:
-            connection.starttls()
-            connection.login(user=MY_EMAIL, password=PASSWORD)
-            connection.sendmail(
-                from_addr=MY_EMAIL,
-                to_addrs=MY_EMAIL,
-                msg=f"Subject: New Contact Message\n\n{send_message}"
-            )
-        return redirect(url_for('get_all_posts'))
-    return render_template("contact.html")
+        send_message = f"Name: {name}\nEmail: {email_address}\nPhone: {phone_number}\nMessage: {message}"
+        
+        try:
+            with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+                connection.starttls()
+                connection.login(user=MY_EMAIL, password=PASSWORD)
+                connection.sendmail(
+                    from_addr=MY_EMAIL,
+                    to_addrs=MY_EMAIL,
+                    msg=f"Subject: New Contact Message\n\n{send_message}"
+                )
+            msg_sent = True
+        except Exception as e:
+            print(f"Email error: {e}")
+            flash("Failed to send message. Please try again.")
+    
+    return render_template("contact.html", msg_sent=msg_sent)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
