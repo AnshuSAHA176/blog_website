@@ -13,9 +13,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from typing import List
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
-from wtforms.validators import email
+
 from forms import CreatePostForm,RegisterForm,LoginForm,Comment_form
-from hashlib import md5
+
 import os
 import hashlib
 import smtplib
