@@ -336,9 +336,7 @@ def send_email(name, email_address, phone_number, message):
     send_message = f"Name: {name}\nEmail: {email_address}\nPhone: {phone_number}\nMessage: {message}"
     try:
         print(f"Attempting to send email...")
-        print(f"MY_EMAIL: {MY_EMAIL}")
-        print(f"PASSWORD set: {bool(PASSWORD)}")
-        with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=30) as connection:
             connection.starttls()
             connection.login(user=MY_EMAIL, password=PASSWORD)
             connection.sendmail(
