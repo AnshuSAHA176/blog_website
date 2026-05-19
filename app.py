@@ -330,6 +330,22 @@ def about():
     return render_template("about.html")
 
 
+import threading
+
+def send_email(name, email_address, phone_number, message):
+    send_message = f"Name: {name}\nEmail: {email_address}\nPhone: {phone_number}\nMessage: {message}"
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+            connection.starttls()
+            connection.login(user=MY_EMAIL, password=PASSWORD)
+            connection.sendmail(
+                from_addr=MY_EMAIL,
+                to_addrs=MY_EMAIL,
+                msg=f"Subject: New Contact Message\n\n{send_message}"
+            )
+    except Exception as e:
+        print(f"Email error: {e}")
+
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
     msg_sent = False
@@ -339,23 +355,11 @@ def contact():
         phone_number = request.form.get("phone")
         message = request.form.get("message")
         
-        send_message = f"Name: {name}\nEmail: {email_address}\nPhone: {phone_number}\nMessage: {message}"
+        thread = threading.Thread(target=send_email, args=(name, email_address, phone_number, message))
+        thread.start()
         
-        try:
-            with smtplib.SMTP("smtp.gmail.com", 587) as connection:
-                connection.starttls()
-                connection.login(user=MY_EMAIL, password=PASSWORD)
-                connection.sendmail(
-                    from_addr=MY_EMAIL,
-                    to_addrs=MY_EMAIL,
-                    msg=f"Subject: New Contact Message\n\n{send_message}"
-                )
-            msg_sent = True
-        except Exception as e:
-            print(f"Email error: {e}")
-            flash("Failed to send message. Please try again.")
+        msg_sent = True
     
     return render_template("contact.html", msg_sent=msg_sent)
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
