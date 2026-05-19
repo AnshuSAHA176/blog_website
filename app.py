@@ -335,6 +335,9 @@ import threading
 def send_email(name, email_address, phone_number, message):
     send_message = f"Name: {name}\nEmail: {email_address}\nPhone: {phone_number}\nMessage: {message}"
     try:
+        print(f"Attempting to send email...")
+        print(f"MY_EMAIL: {MY_EMAIL}")
+        print(f"PASSWORD set: {bool(PASSWORD)}")
         with smtplib.SMTP("smtp.gmail.com", 587) as connection:
             connection.starttls()
             connection.login(user=MY_EMAIL, password=PASSWORD)
@@ -343,9 +346,9 @@ def send_email(name, email_address, phone_number, message):
                 to_addrs=MY_EMAIL,
                 msg=f"Subject: New Contact Message\n\n{send_message}"
             )
+        print("Email sent successfully!")
     except Exception as e:
         print(f"Email error: {e}")
-
 @app.route("/contact", methods=["GET", "POST"])
 def contact():
     msg_sent = False
