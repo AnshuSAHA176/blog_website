@@ -16,6 +16,7 @@ from sqlalchemy.orm import relationship
 from forms import CreatePostForm,RegisterForm,LoginForm,Comment_form
 from hashlib import md5
 import os
+import hashlib
 login_manager = LoginManager()
 
 
@@ -23,16 +24,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('FLASK_KEY')
 ckeditor = CKEditor(app)
 Bootstrap5(app)
-gravatar = Gravatar(
-    app,
-    size=100,
-    rating='g',
-    default='retro',
-    force_default=False,
-    force_lower=False,
-    use_ssl=False,
-    base_url=None
-)
+@app.template_filter('md5')
+def md5_filter(string):
+    return hashlib.md5(string.encode()).hexdigest()
 # TODO: Configure Flask-Login
 login_manager.init_app(app)
 
@@ -242,9 +236,11 @@ def get_all_posts():
 # TODO: Allow logged-in users to comment on posts
 @app.route("/post/<int:post_id>")
 def show_post(post_id):
-    email=current_user.email
-   
-    avatar='https://www.gravatar.com/avatar/' + md5(email.lower().encode()).hexdigest()
+    if current_user.is_authenticated:
+        email = current_user.email
+        avatar = 'https://www.gravatar.com/avatar/' + md5(email.lower().encode()).hexdigest()
+    else:
+        avatar = None
 
     form=Comment_form()
     requested_post = db.get_or_404(BlogPost, post_id)
@@ -336,4 +332,4 @@ def contact():
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)
