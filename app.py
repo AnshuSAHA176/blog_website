@@ -330,31 +330,30 @@ def about():
     return render_template("about.html")
 
 
-@app.route("/contact",methods=["GET", "POST"])
+@app.route("/contact", methods=["GET", "POST"])
 def contact():
     if request.method == "POST":
-        # Handle form submission
-        name=request.args.get("name")
-        email_address=request.args.get("email")
-        phone_number=request.args.get("phone")
-        message=request.args.get("message")
+        name = request.form.get("name")
+        email_address = request.form.get("email")
+        phone_number = request.form.get("phone")
+        message = request.form.get("message")
         
-        send_message=f"""
-name: {name},
-
-email: {email_address},
-
-phone number: {phone_number},
-
+        send_message = f"""
+name: {name}
+email: {email_address}
+phone number: {phone_number}
 message: {message}
 """
-        connection=smtplib.SMTP("smtp.gmail.com",587)
-        connection.starttls()
-        connection.login(user=MY_EMAIL,password=PASSWORD)
-        connection.sendmail(from_addr=MY_EMAIL,to_addrs=MY_EMAIL,msg=f"subject:contact news\n\n{send_message}")
+        with smtplib.SMTP("smtp.gmail.com", 587) as connection:
+            connection.starttls()
+            connection.login(user=MY_EMAIL, password=PASSWORD)
+            connection.sendmail(
+                from_addr=MY_EMAIL,
+                to_addrs=MY_EMAIL,
+                msg=f"Subject: New Contact Message\n\n{send_message}"
+            )
         return redirect(url_for('get_all_posts'))
     return render_template("contact.html")
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
