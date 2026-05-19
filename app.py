@@ -13,10 +13,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from typing import List
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from wtforms.validators import email
 from forms import CreatePostForm,RegisterForm,LoginForm,Comment_form
 from hashlib import md5
 import os
 import hashlib
+import smtplib
+# "anshusahaa62@gmail.com"
+MY_EMAIL=os.environ.get("my_email")
+PASSWORD=os.environ.get("password")
 login_manager = LoginManager()
 
 
@@ -325,8 +330,29 @@ def about():
     return render_template("about.html")
 
 
-@app.route("/contact")
+@app.route("/contact",methods=["GET", "POST"])
 def contact():
+    if request.method == "POST":
+        # Handle form submission
+        name=request.args.get("name")
+        email_address=request.args.get("email")
+        phone_number=request.args.get("phone")
+        message=request.args.get("message")
+        
+        send_message=f"""
+name: {name},
+
+email: {email_address},
+
+phone number: {phone_number},
+
+message: {message}
+"""
+        connection=smtplib.SMTP("smtp.gmail.com",587)
+        connection.starttls()
+        connection.login(user=MY_EMAIL,password=PASSWORD)
+        connection.sendmail(from_addr=MY_EMAIL,to_addrs=MY_EMAIL,msg=f"subject:contact news\n\n{send_message}")
+
     return render_template("contact.html")
 
 
