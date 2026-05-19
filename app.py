@@ -21,7 +21,7 @@ login_manager = LoginManager()
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('FLASK_KEY')
+app.config['SECRET_KEY'] = os.environ.get('FLASK_KEY', 'temporary-test-key')
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 @app.template_filter('md5')
