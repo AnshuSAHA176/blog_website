@@ -236,17 +236,16 @@ def get_all_posts():
 # TODO: Allow logged-in users to comment on posts
 @app.route("/post/<int:post_id>")
 def show_post(post_id):
-    if current_user.is_authenticated:
-        email = current_user.email
-        avatar = 'https://www.gravatar.com/avatar/' + md5(email.lower().encode()).hexdigest()
-    else:
-        avatar = None
 
-    form=Comment_form()
+    form = Comment_form()
     requested_post = db.get_or_404(BlogPost, post_id)
-    return render_template("post.html", post=requested_post,current_user=current_user,form=form,img_url=avatar)
 
-  
+    return render_template(
+        "post.html",
+        post=requested_post,
+        current_user=current_user,
+        form=form
+    )
 def admin_only(f):
 
     @wraps(f)
